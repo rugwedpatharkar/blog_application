@@ -1,5 +1,6 @@
 package com.blog_application.blog_application.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -14,7 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import com.blog_application.blog_application.dto.UserProfileDTO;
 import com.blog_application.blog_application.exception.AlertException;
+import com.blog_application.blog_application.model.Blog;
 import com.blog_application.blog_application.model.User;
+import com.blog_application.blog_application.repository.BlogRepository;
 import com.blog_application.blog_application.repository.FollowRepository;
 import com.blog_application.blog_application.repository.UserRepository;
 
@@ -27,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private FollowRepository followRepository;
+
+	@Autowired
+	private BlogRepository blogRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -46,6 +52,7 @@ public class UserServiceImpl implements UserService {
 
 		if (user != null && passwordEncoder.matches(password, user.getPassword())) {
 			return user;
+
 		}
 
 		throw new AlertException("warning", "Invalid username or password");
@@ -71,6 +78,11 @@ public class UserServiceImpl implements UserService {
 			logger.error("Error during user registration", e);
 			throw e;
 		}
+	}
+
+	public List<Blog> getBlogsByUserId(String userId) {
+		// Assuming your Blog entity has an 'authorId' field
+		return blogRepository.findByAuthorId(userId);
 	}
 
 	@Override
@@ -169,31 +181,31 @@ public class UserServiceImpl implements UserService {
 		return null; // Handle the case when the user is not found
 	}
 
-	public User updateUserProfile(String id, User updatedUser) {
+	public User updateUserProfile(String id, User user) {
 		try {
 			Optional<User> optionalUser = userRepository.findById(id);
 			if (optionalUser.isPresent()) {
 				User existingUser = optionalUser.get();
 
 				// Check if the updated username already exists for another user
-				if (!existingUser.getUsername().equals(updatedUser.getUsername())
-						&& userRepository.findByUsername(updatedUser.getUsername()) != null) {
+				if (!existingUser.getUsername().equals(user.getUsername())
+						&& userRepository.findByUsername(user.getUsername()) != null) {
 					throw new AlertException("error", "Username already exists");
 				}
 
 				// Check if the updated email already exists for another user
-				if (!existingUser.getEmail().equals(updatedUser.getEmail())
-						&& userRepository.findByEmail(updatedUser.getEmail()) != null) {
+				if (!existingUser.getEmail().equals(user.getEmail())
+						&& userRepository.findByEmail(user.getEmail()) != null) {
 					throw new AlertException("error", "Email already exists");
 				}
 
 				// Update fields you want to allow updating
-				existingUser.setName(updatedUser.getName());
-				existingUser.setUsername(updatedUser.getUsername());
-				existingUser.setEmail(updatedUser.getEmail());
+				existingUser.setName(user.getName());
+				existingUser.setUsername(user.getUsername());
+				existingUser.setEmail(user.getEmail());
 
 				// Update password if a new password is provided and meets validation criteria
-				String newPassword = updatedUser.getPassword();
+				String newPassword = user.getPassword();
 				if (newPassword != null && !newPassword.isEmpty() && !PasswordValidator.isValidPassword(newPassword)) {
 					throw new AlertException("note", "Invalid password. Please choose a stronger password.");
 				} else if (newPassword != null && !newPassword.isEmpty()) {
@@ -205,7 +217,7 @@ public class UserServiceImpl implements UserService {
 
 				return userRepository.save(existingUser);
 			} else {
-				throw new AlertException("error", "User not found");
+				throw new AlertException("warning", "User not found");
 			}
 		} catch (Exception e) {
 			logger.error("Error during user profile update", e);

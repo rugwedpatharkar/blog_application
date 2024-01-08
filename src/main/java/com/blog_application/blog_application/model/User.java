@@ -3,6 +3,7 @@ package com.blog_application.blog_application.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document
@@ -16,10 +17,14 @@ public class User {
 	private String password;
 	private String resetToken;
 
-	private List<String> blogIds; // List of blog document IDs
-	private List<String> commentIds; // List of comment document IDs
-	private List<String> followerIds; // List of follower user IDs
-	private List<String> followingIds; // List of following user IDs
+	private List<String> blogIds = new ArrayList<>();
+	private List<String> commentIds = new ArrayList<>();
+	private List<String> followerIds = new ArrayList<>();
+	private List<String> followingIds = new ArrayList<>();
+
+	public User() {
+		this.blogIds = new ArrayList<>();
+	}
 
 	public String getId() {
 		return this.id;
