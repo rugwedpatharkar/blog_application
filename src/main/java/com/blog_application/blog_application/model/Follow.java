@@ -6,17 +6,26 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class Follow {
     @Id
-    private String id;
+    private String followId;
 
     private String followerId; // Reference to the user document ID
     private String followingId; // Reference to the user document ID
 
-    public String getId() {
-        return this.id;
+    public Follow() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Follow(String followId, String followerId, String followingId) {
+        this.followId = followId;
+        this.followerId = followerId;
+        this.followingId = followingId;
+    }
+
+    public String getFollowId() {
+        return this.followId;
+    }
+
+    public void setFollowId(String followId) {
+        this.followId = followId;
     }
 
     public String getFollowerId() {
@@ -38,16 +47,10 @@ public class Follow {
     @Override
     public String toString() {
         return "{" +
-                " id='" + getId() + "'" +
+                " followId='" + getFollowId() + "'" +
                 ", followerId='" + getFollowerId() + "'" +
                 ", followingId='" + getFollowingId() + "'" +
                 "}";
-    }
-
-    public Follow(String id, String followerId, String followingId) {
-        this.id = id;
-        this.followerId = followerId;
-        this.followingId = followingId;
     }
 
 }

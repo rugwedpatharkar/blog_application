@@ -9,7 +9,7 @@ import java.util.List;
 @Document
 public class User {
 	@Id
-	private String id;
+	private String userId;
 
 	private String name;
 	private String username;
@@ -26,12 +26,26 @@ public class User {
 		this.blogIds = new ArrayList<>();
 	}
 
-	public String getId() {
-		return this.id;
+	public User(String userId, String name, String username, String email, String password, String resetToken,
+			List<String> blogIds, List<String> commentIds, List<String> followerIds, List<String> followingIds) {
+		this.userId = userId;
+		this.name = name;
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.resetToken = resetToken;
+		this.blogIds = blogIds;
+		this.commentIds = commentIds;
+		this.followerIds = followerIds;
+		this.followingIds = followingIds;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String getUserId() {
+		return this.userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getName() {
@@ -106,24 +120,10 @@ public class User {
 		this.followingIds = followingIds;
 	}
 
-	public User(String id, String name, String username, String email, String password, String resetToken,
-			List<String> blogIds, List<String> commentIds, List<String> followerIds, List<String> followingIds) {
-		this.id = id;
-		this.name = name;
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.resetToken = resetToken;
-		this.blogIds = blogIds;
-		this.commentIds = commentIds;
-		this.followerIds = followerIds;
-		this.followingIds = followingIds;
-	}
-
 	@Override
 	public String toString() {
 		return "{" +
-				" id='" + getId() + "'" +
+				" userId='" + getUserId() + "'" +
 				", name='" + getName() + "'" +
 				", username='" + getUsername() + "'" +
 				", email='" + getEmail() + "'" +

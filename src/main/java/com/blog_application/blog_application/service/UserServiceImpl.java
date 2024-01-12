@@ -1,8 +1,10 @@
 package com.blog_application.blog_application.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +15,15 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blog_application.blog_application.dto.UserProfileDTO;
 import com.blog_application.blog_application.exception.AlertException;
 import com.blog_application.blog_application.model.Blog;
+import com.blog_application.blog_application.model.Follow;
 import com.blog_application.blog_application.model.User;
 import com.blog_application.blog_application.repository.BlogRepository;
+import com.blog_application.blog_application.repository.CommentRepository;
 import com.blog_application.blog_application.repository.FollowRepository;
 import com.blog_application.blog_application.repository.UserRepository;
+import java.util.function.Function; // Make sure to import Function
 
 import io.micrometer.common.util.StringUtils;
 
@@ -36,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private CommentRepository commentRepository;
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -69,7 +76,7 @@ public class UserServiceImpl implements UserService {
 			}
 
 			if (!PasswordValidator.isValidPassword(user.getPassword())) {
-				throw new AlertException("note", "Invalid password. Please choose a stronger password.");
+				throw new AlertException("error", "Invalid password. Please choose a stronger password.");
 			}
 
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -164,26 +171,9 @@ public class UserServiceImpl implements UserService {
 		return String.valueOf(otp);
 	}
 
-	public UserProfileDTO getUserProfile(String id) {
-		User user = userRepository.findById(id).orElse(null);
-		if (user != null) {
-			long followersCount = followRepository.countByFollowingId(id);
-			long followingCount = followRepository.countByFollowerId(id);
-
-			return new UserProfileDTO(user.getId(), user.getUsername(), user.getName(), user.getEmail(),
-					user.getFollowerIds(),
-					user.getFollowingIds(),
-
-					followersCount,
-					followingCount);
-		}
-
-		return null; // Handle the case when the user is not found
-	}
-
-	public User updateUserProfile(String id, User user) {
+	public User updateUserProfile(String userId, User user) {
 		try {
-			Optional<User> optionalUser = userRepository.findById(id);
+			Optional<User> optionalUser = userRepository.findById(userId);
 			if (optionalUser.isPresent()) {
 				User existingUser = optionalUser.get();
 
@@ -224,4 +214,94 @@ public class UserServiceImpl implements UserService {
 			throw e;
 		}
 	}
+
+	@Override
+	public User getUserById(String userId) {
+		return userRepository.findById(userId).orElse(null);
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+	public List<User> getFollowers(String userId) {
+		List<Follow> followers = followRepository.findByFollowingId(userId);
+		return followers.stream()
+				.map(follow -> getUserById(follow.getFollowerId()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<User> getFollowing(String userId) {
+		List<Follow> following = followRepository.findByFollowerId(userId);
+		return following.stream()
+				.map(follow -> getUserById(follow.getFollowingId()))
+				.collect(Collectors.toList());
+	}
+
+	// UserServiceImpl.java
+
+	@Override
+	public void followUser(String followerId, String followingId) {
+		// Check if the follow relationship already exists
+		if (!followRepository.existsByFollowerIdAndFollowingId(followerId, followingId)) {
+			Follow follow = new Follow();
+			follow.setFollowerId(followerId);
+			follow.setFollowingId(followingId);
+			followRepository.save(follow);
+
+			// Update user's follower and following lists
+			updateUserFollowLists(followerId, followingId);
+		}
+	}
+
+	private void updateUserFollowLists(String followerId, String followingId) {
+		// Update follower list of the user being followed
+		User followingUser = getUserById(followingId);
+		followingUser.getFollowerIds().add(followerId);
+		userRepository.save(followingUser);
+
+		// Update following list of the follower
+		User followerUser = getUserById(followerId);
+		followerUser.getFollowingIds().add(followingId);
+		userRepository.save(followerUser);
+	}
+
+	@Override
+	public void unfollowUser(String followerId, String followingId) {
+		followRepository.deleteByFollowerIdAndFollowingId(followerId, followingId);
+	}
+
+	@Override
+	public boolean isFollowing(String followerId, String followingId) {
+		return followRepository.existsByFollowerIdAndFollowingId(followerId, followingId);
+	}
+
+	@Override
+	public List<Blog> getBlogsOfFollowingUsers(String userId) {
+		List<Follow> follows = followRepository.findByFollowerId(userId);
+		List<String> followingIds = follows.stream().map(Follow::getFollowingId).collect(Collectors.toList());
+
+		List<Blog> blogs = blogRepository.findByAuthorIdIn(followingIds);
+
+		// Retrieve authors for the blogs
+		Map<String, User> authorMap = userRepository.findByUserIdIn(followingIds)
+				.stream()
+				.collect(Collectors.toMap(User::getUserId, Function.identity()));
+
+		// Set the username for each blog
+		blogs.forEach(blog -> {
+			User author = authorMap.get(blog.getAuthorId());
+			if (author != null) {
+				blog.setUsername(author.getUsername());
+				blog.setUserId(author.getUserId());
+
+			}
+		});
+
+		return blogs;
+	}
+
 }

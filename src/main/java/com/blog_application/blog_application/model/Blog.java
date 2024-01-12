@@ -2,6 +2,7 @@ package com.blog_application.blog_application.model;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -10,11 +11,15 @@ import java.util.List;
 @Document
 public class Blog {
     @Id
-    private String id;
+    private String blogId;
 
     private String title;
     private String content;
     private String authorId;
+    @Transient
+    private String userId;
+    @Transient
+    private String username;
 
     private List<String> commentIds;
     private List<String> tags;
@@ -30,12 +35,15 @@ public class Blog {
     public Blog() {
     }
 
-    public Blog(String id, String title, String content, String authorId, List<String> commentIds, List<String> tags,
-            String link1, String link2, String link3, String link4, LocalDateTime creationDate) {
-        this.id = id;
+    public Blog(String blogId, String title, String content, String authorId, String userId, String username,
+            List<String> commentIds, List<String> tags, String link1, String link2, String link3, String link4,
+            LocalDateTime creationDate) {
+        this.blogId = blogId;
         this.title = title;
         this.content = content;
         this.authorId = authorId;
+        this.userId = userId;
+        this.username = username;
         this.commentIds = commentIds;
         this.tags = tags;
         this.link1 = link1;
@@ -45,12 +53,12 @@ public class Blog {
         this.creationDate = creationDate;
     }
 
-    public String getId() {
-        return this.id;
+    public String getBlogId() {
+        return this.blogId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setBlogId(String blogId) {
+        this.blogId = blogId;
     }
 
     public String getTitle() {
@@ -75,6 +83,22 @@ public class Blog {
 
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public List<String> getCommentIds() {
@@ -136,10 +160,12 @@ public class Blog {
     @Override
     public String toString() {
         return "{" +
-                " id='" + getId() + "'" +
+                " blogId='" + getBlogId() + "'" +
                 ", title='" + getTitle() + "'" +
                 ", content='" + getContent() + "'" +
                 ", authorId='" + getAuthorId() + "'" +
+                ", userId='" + getUserId() + "'" +
+                ", username='" + getUsername() + "'" +
                 ", commentIds='" + getCommentIds() + "'" +
                 ", tags='" + getTags() + "'" +
                 ", link1='" + getLink1() + "'" +

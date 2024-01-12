@@ -144,7 +144,7 @@ h3 {
                         Add Blog</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle ml-3 text-light fw-bolder" role="button"
+                    <a class="nav-link dropdown-toggle ml-3 text-light fw-bolder" href="#" role="button"
                        data-bs-toggle="dropdown"
                        aria-expanded="false">
                         <span th:text="${user.username}"></span>
@@ -173,95 +173,40 @@ h3 {
 
     <div class="container mt-5">
         <div class="profile-info">
-          <div class="row">
-            <h2 th:text="${user.username}" class="fw-bold col-sm"></h2>
-            <a
-              class="btn btn-success fw-bolder col-sm "
-              th:href="@{/update-profile}"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="30"
-                height="30"
-                fill="currentColor"
-                class="bi bi-pencil-square"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-                />
-                <path
-                  fill-rule="evenodd"
-                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                />
-              </svg>Update
-            </a>
-            <p class="text-muted" th:text="${user.name}"></p>
-            <p class="text-muted" th:text="${user.email}"></p>
-          </div>
+            <div class="row">
+                <h2 th:text="${searcheduser.username}" class="fw-bold col-sm"></h2>
+                <p class="text-muted" th:text="${searcheduser.name}"></p>
+                <p class="text-muted" th:text="${searcheduser.email}"></p>
+            </div>
+            <div class="text-center mt-3">
+                <!-- Unfollow form -->
+                <form th:if="${isFollowing}" action="/unfollow" method="post">
+                    <input type="hidden" name="userId" th:value="${searcheduser.userId}" />
+                    <input type="hidden" name="followerId" th:value="${loggedInUserId}" />
+                    <input type="hidden" name="followingId" th:value="${searcheduser.userId}" />
+                    <button type="submit" class="btn btn-danger">Unfollow</button>
+                </form>
+                
+            
+                <!-- Follow form -->
+                <form th:unless="${isFollowing}" action="/follow" method="post">
+                    <input type="hidden" name="userId" th:value="${searcheduser.userId}" />
+                    <input type="hidden" name="followerId" th:value="${loggedInUserId}" />
+                    <input type="hidden" name="followingId" th:value="${searcheduser.userId}" />
+                    <button type="submit" class="btn btn-primary">Follow</button>
+                </form>
+            </div>
+            
         </div>
+        
         <hr class="hr" />
 
-        <!-- Blogs Section -->
         <div class="blogs">
-          <h2 class="fw-bold mb-3"> Your Blogs</h2>
+          <h2 class="fw-bold mb-3">Blogs</h2>
 
-          <div th:each="blog : ${blogs}" class="blog">
+          <div th:each="blog : ${userBlogs}" class="blog">
             <div class="d-flex justify-content-between align-items-center">
-              <!-- Blog title -->
-              <a class="text-muted text-decoration-none" th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"> <h3 class="fw-bold text-primary" th:text="${blog.title}"></h3></a>
-
-              <!-- Add buttons for update and delete -->
-              <div>
-                <form
-                  th:action="@{/update-blog/{blogId}(blogId=${blog.blogId})}"
-                  method="post"
-                  style="display: inline"
-                >
-                  <button type="submit" class="btn btn-primary">
-                    <!-- SVG icon for edit -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-pencil-square"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                      />
-                    </svg>
-                  </button>
-                </form>
-                <form
-                  th:action="@{/delete-blog/{blogId}(blogId=${blog.blogId})}"
-                  method="post"
-                  style="display: inline"
-                >
-                  <button type="submit" class="btn btn-danger">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-trash"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
-                      />
-                      <path
-                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
-                      />
-                    </svg>
-                  </button>
-                </form>
-              </div>
+              <h3 class="fw-bold text-primary" th:text="${blog.title}"></h3>
             </div>
 
             <p class="mb-2" th:text="${#strings.substring(blog.content, 0, 100)}"></p>

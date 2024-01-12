@@ -23,16 +23,16 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Blog createBlog(String id, String title, String content, String[] selectedTags, String link1, String link2,
-            String link3, String link4) {
-        Optional<User> optionalUser = userRepository.findById(id);
+    public Blog createBlog(String blogId, String title, String content, String[] selectedTags, String link1,
+            String link2, String link3, String link4) {
+        Optional<User> optionalUser = userRepository.findById(blogId);
         if (optionalUser.isPresent()) {
             User author = optionalUser.get();
 
             Blog blog = new Blog();
             blog.setTitle(title);
             blog.setContent(content);
-            blog.setAuthorId(id);
+            blog.setAuthorId(blogId);
 
             // Use the selected tags if available, otherwise, set an empty list
             List<String> tagsList = (selectedTags != null) ? List.of(selectedTags) : List.of();
@@ -50,7 +50,7 @@ public class BlogServiceImpl implements BlogService {
             Blog savedBlog = blogRepository.save(blog);
 
             // Update user's blogIds
-            author.getBlogIds().add(savedBlog.getId());
+            author.getBlogIds().add(savedBlog.getBlogId());
             userRepository.save(author);
 
             return savedBlog;
@@ -102,5 +102,10 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Blog getBlog(String blogId) {
         return blogRepository.findById(blogId).orElse(null);
+    }
+
+    @Override
+    public Optional<Blog> getBlogDetails(String blogId, String userId) {
+        return blogRepository.findByBlogIdAndAuthorId(blogId, userId);
     }
 }

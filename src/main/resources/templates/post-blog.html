@@ -21,7 +21,7 @@
       .container,
       .profile-container {
         margin-top: 50px;
-        max-width: 600px;
+        max-width: 800px; 
         border: 1px solid #ddd;
         border-radius: 8px;
         padding: 20px;
@@ -126,17 +126,10 @@
         >
           <img th:src="@{/img/favicon.png}" alt="BlobBuddy Logo" /> BlogBuddy
         </a>
-        <form class="d-flex align-items-center nav-search" role="search">
-          <input
-            class="form-control me-2"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-          />
-          <button class="btn" style="background-color: #ea721e" type="submit">
-            Search
-          </button>
-        </form>
+        <form class="d-flex align-items-center nav-search" method="GET" th:action="@{/search}" role="search">
+          <input class="form-control me-2" type="search" name="query" id="query" placeholder="Search" aria-label="Search"/>
+          <button class="btn" style="background-color: #ea721e" type="submit">Search</button>
+      </form>
         <div
           class="collapse navbar-collapse justify-content-end"
           id="navbarSupportedContent"
