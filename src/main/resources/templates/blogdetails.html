@@ -16,7 +16,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand fw-bold fs-5" style="color: #ea721e" href="/home">
+        <a class="navbar-brand fw-bold fs-4" style="color: #ea721e" href="/home">
             <img th:src="@{/img/favicon.png}" style="max-height: 40px;" alt="BlobBuddy Logo"/> BlogBuddy
         </a>
         <form class="d-flex align-items-center nav-search" method="GET" th:action="@{/search}" role="search">
@@ -39,9 +39,9 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light fw-bolder" role="button"
+                    <a class="nav-link dropdown-toggle ml-3 text-light fw-bolder" href="#" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="h5" th:text="${user.username}"></span>
+                        <span th:text="${user.username}"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
@@ -104,39 +104,80 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                      <a th:if="${blog.userId == user.userId}"
-                      class="text-muted text-decoration-none"
-                      th:href="@{/profile}">
-                       <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
-                   </a>
-                   <a th:unless="${blog.userId == user.userId}"
-                      class="text-muted text-decoration-none"
-                      th:href="@{/userprofile/{userId}(userId=${blog.userId})}">
-                       <p class="card-text fw-bold" th:text="${blog.username}"></p>
-                   </a>
+                      
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="justify-content-between align-items-center">
+                      <img th:if="${not #strings.isEmpty(blog.imagePath)}" th:src="@{${blog.imagePath}}"
+                      class="card-img-top" alt="Blog Image">
+
                         <a class="text-muted text-decoration-none"
-                           th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}">
-                            <img th:if="${not #strings.isEmpty(blog.imagePath)}" th:src="@{${blog.imagePath}}"
-                                 class="card-img-top" alt="Blog Image">
+                           th:href="@{'/blogdetails/' + ${blog.blogId} + '/user/' + ${blog.userId}}">
                             <h2 class="fw-bold " th:text="${blog.title}"></h2>
                         </a>
+                          <form
+                            th:action="@{/update-blog/{blogId}(blogId=${blog.blogId})}"
+                            method="post"
+                            style="display: inline"
+                          >
+                            <button type="submit" class="btn btn-primary">
+                              <!-- SVG icon for edit -->
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-pencil-square"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+                                />
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                                />
+                              </svg>Update
+                            </button>
+                          </form>
+                          <form
+                            th:action="@{/delete-blog/{blogId}(blogId=${blog.blogId})}"
+                            method="post"
+                            style="display: inline"
+                          >
+                            <button type="submit" class="btn btn-danger">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-trash"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
+                                />
+                                <path
+                                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
+                                />
+                              </svg>Delete
+                            </button>
+                          </form>
                     </div>
+                    
                     <p class="card-text" th:text="${blog.content}"></p>
                 </div>
                 <div class="card-footer">
-                    <div class="d-flex justify-content-between align-items-center ">
+                    <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Links:</strong>
-                            <a th:href="${blog.link1}"  target="_blank" class="btn btn-link text-decoration-none" role="button"
-                               th:text="${blog.link1}"></a>
-                            <a th:href="${blog.link2}" target="_blank" class="btn btn-link text-decoration-none" role="button"
-                               th:text="${blog.link2}"></a>
-                            <a th:href="${blog.link3}" target="_blank" class="btn btn-link text-decoration-none" role="button"
-                               th:text="${blog.link3}"></a>
-                            <a th:href="${blog.link4}" target="_blank" class="btn btn-link text-decoration-none" role="button"
-                               th:text="${blog.link4}"></a>
+                          <strong>Links:</strong>
+                          <a th:href="${blog.link1}"  target="_blank" class="btn btn-link text-decoration-none" role="button"
+                             th:text="${blog.link1}"></a>
+                          <a th:href="${blog.link2}" target="_blank" class="btn btn-link text-decoration-none" role="button"
+                             th:text="${blog.link2}"></a>
+                          <a th:href="${blog.link3}" target="_blank" class="btn btn-link text-decoration-none" role="button"
+                             th:text="${blog.link3}"></a>
+                          <a th:href="${blog.link4}" target="_blank" class="btn btn-link text-decoration-none" role="button"
+                             th:text="${blog.link4}"></a> 
                         </div>
                     </div>
                 </div>
@@ -148,7 +189,6 @@
                       </div>
                   </div>
               </div>
-              
                 <div class="card-footer">
                     
                     <h4>Comments</h4>
@@ -167,8 +207,7 @@
                               th:href="@{/userprofile/{userId}(userId=${comment.userId})}">
                                <p class="card-text fw-bold h6 " th:text="${'@'+comment.user.username}"></p>
                            </a>
-                           
-                              <p class="card-text h4" th:text="${comment.comment}"></p>
+                              <p class="card-text" th:text="${comment.comment}"></p>
                             </div>
                             <div
                               th:if="${comment.user.userId eq user.userId}"

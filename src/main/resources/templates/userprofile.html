@@ -1,220 +1,238 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.com">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BlogBuddy</title>
-    <link th:href="@{/img/favicon.png}" rel="icon"/>
+    <link th:href="@{/img/favicon.png}" rel="icon" />
     <link
-            th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-            crossorigin="anonymous"
+      th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
     />
-<style>
-  body {
-    background-color: #f8f9fa;
-    font-family: 'Arial', sans-serif;
-}
-
-/* Common Styling for Containers */
-.container,
-.profile-container {
-    margin-top: 50px;
-    max-width: 800px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    animation: fadeInUp 0.5s ease-out;
-}
-
-/* Common Styling for Headings */
-h2,
-h3 {
-    color: #007bff;
-}
-
-/* Common Styling for Form Groups */
-.form-group,
-.profile-info,
-{
-    margin-bottom: 20px;
-}
-.profile-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-
-
-.profile-info div {
-    flex-grow: 1;
-}
-
-.follower-info {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-}
-
-.follower-info div {
-    text-align: center;
-    flex-grow: 1;
-}
-
-.update-buttons {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.update-buttons button {
-    margin-right: 10px;
-}
-/* Common Styling for Labels */
-.form-label {
-    font-weight: bold;
-    color: #333;
-}
-
-/* Common Styling for Form Controls */
-.form-control {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    width: 100%;
-    padding: 8px;
-}
-
-/* Common Styling for Form Checks */
-.form-check {
-    margin-right: 10px;
-}
-
-/* Common Styling for Primary Buttons */
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-/* Custom Animation */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.navbar-brand img {
-    max-height: 40px; /* Adjust the height as needed */
-}
-</style>
-    
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold fs-5" style="color: #ea721e" href="/home">
-            <img th:src="@{/img/favicon.png}" alt="BlobBuddy Logo"/> BlogBuddy
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a
+          class="navbar-brand fw-bold fs-5"
+          style="color: #ea721e"
+          href="/home"
+        >
+          <img
+            th:src="@{/img/favicon.png}"
+            style="max-height: 40px"
+            alt="BlobBuddy Logo"
+          />
+          BlogBuddy
         </a>
-        <form class="d-flex align-items-center nav-search" method="GET" th:action="@{/search}" role="search">
-          <input class="form-control me-2" type="search" name="query" id="query" placeholder="Search" aria-label="Search"/>
-          <button class="btn" style="background-color: #ea721e" type="submit">Search</button>
-      </form>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a type="button" class="btn btn-light fw-bolder me-3" th:href="@{/post-blog}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                             class="bi bi-plus" viewBox="0 0 20 20">
-                            <path
-                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                        </svg>
-                        Add Blog</a>
+        <form
+          class="d-flex align-items-center nav-search"
+          method="GET"
+          th:action="@{/search}"
+          role="search"
+        >
+          <input
+            class="form-control me-2"
+            type="search"
+            name="query"
+            id="query"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button class="btn" style="background-color: #ea721e" type="submit">
+            Search
+          </button>
+        </form>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarSupportedContent"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                type="button"
+                class="btn btn-light fw-bolder me-3"
+                th:href="@{/post-blog}"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  class="bi bi-plus"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+                  />
+                </svg>
+                Add Blog</a
+              >
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle ml-3 text-light fw-bolder"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span th:text="${user.username}"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" th:href="@{/profile}">Profile</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle ml-3 text-light fw-bolder" href="#" role="button"
-                       data-bs-toggle="dropdown"
-                       aria-expanded="false">
-                        <span th:text="${user.username}"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" th:href="@{/profile}">Profile</a></li>
-                        <li><hr class="dropdown-divider"/></li>
-                        <li>
-                            <a class="dropdown-item" th:href="@{/logout}">Logout</a>
-                        </li>
-                    </ul>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" th:href="@{/logout}">Logout</a>
                 </li>
-            </ul>
+              </ul>
+            </li>
+          </ul>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-<div th:if="${alertMessage}" th:class="'alert alert-' + ${alertType} + ' align-items-center alert-dismissible fade show '" role="alert">
-    <strong th:text="${alertType}"></strong> <span th:text="${alertMessage}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<div th:if="${alert}" th:class="'alert alert-' + ${alert.type} + ' alert-dismissible fade show'" role="alert">
-    <strong th:text="${alert.type}"></strong> <span th:text="${alert.message}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+    <div
+      th:if="${alertMessage}"
+      th:class="'alert alert-' + ${alertType} + ' align-items-center alert-dismissible fade show '"
+      role="alert"
+    >
+      <strong th:text="${alertType}"></strong>
+      <span th:text="${alertMessage}"></span>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div
+      th:if="${alert}"
+      th:class="'alert alert-' + ${alert.type} + ' alert-dismissible fade show'"
+      role="alert"
+    >
+      <strong th:text="${alert.type}"></strong>
+      <span th:text="${alert.message}"></span>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
 
     <div class="container mt-5">
-        <div class="profile-info">
-            <div class="row">
-                <h2 th:text="${searcheduser.username}" class="fw-bold col-sm"></h2>
-                <p class="text-muted" th:text="${searcheduser.name}"></p>
-                <p class="text-muted" th:text="${searcheduser.email}"></p>
+      <div class="row">
+        <!-- Tags Section -->
+        <div class="col-md-3">
+          <div class="card mb-3">
+            <div class="card-header">
+              <h2 class="fw-bold">Tags</h2>
             </div>
-            <div class="text-center mt-3">
-                <!-- Unfollow form -->
-                <form th:if="${isFollowing}" action="/unfollow" method="post">
-                    <input type="hidden" name="userId" th:value="${searcheduser.userId}" />
-                    <input type="hidden" name="followerId" th:value="${loggedInUserId}" />
-                    <input type="hidden" name="followingId" th:value="${searcheduser.userId}" />
-                    <button type="submit" class="btn btn-danger">Unfollow</button>
-                </form>
-                
-            
-                <!-- Follow form -->
-                <form th:unless="${isFollowing}" action="/follow" method="post">
-                    <input type="hidden" name="userId" th:value="${searcheduser.userId}" />
-                    <input type="hidden" name="followerId" th:value="${loggedInUserId}" />
-                    <input type="hidden" name="followingId" th:value="${searcheduser.userId}" />
-                    <button type="submit" class="btn btn-primary">Follow</button>
-                </form>
+            <div class="card-body">
+              <div class="d-flex flex-wrap">
+                <div th:each="tag : ${tags}" class="me-2 mb-2">
+                  <a
+                    th:href="@{'/blogs/' + ${tag}}"
+                    class="text-decoration-none text-body"
+                  >
+                    <span class="fw-bolder badge bg-primary"
+                      >#<span th:text="${tag}"></span
+                    ></span>
+                  </a>
+                </div>
+              </div>
             </div>
-            
+          </div>
         </div>
-        
-        <hr class="hr" />
 
-        <div class="blogs">
-          <h2 class="fw-bold mb-3">Blogs</h2>
+        <!-- User Profile Section -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="mb-4 fw-bold" th:text="${searcheduser.username}"></h2>
+              <p class="text-muted" th:text="${searcheduser.name}"></p>
+              <p class="text-muted" th:text="${searcheduser.email}"></p>
+            </div>
+            <div class="card-body">
+              <!-- Unfollow and Follow Forms -->
+              <div class="text-center mt-3">
+                <form th:if="${isFollowing}" action="/unfollow" method="post">
+                  <input
+                    type="hidden"
+                    name="userId"
+                    th:value="${searcheduser.userId}"
+                  />
+                  <input
+                    type="hidden"
+                    name="followerId"
+                    th:value="${loggedInUserId}"
+                  />
+                  <input
+                    type="hidden"
+                    name="followingId"
+                    th:value="${searcheduser.userId}"
+                  />
+                  <button type="submit" class="btn btn-danger">Unfollow</button>
+                </form>
+
+                <form th:unless="${isFollowing}" action="/follow" method="post">
+                  <input
+                    type="hidden"
+                    name="userId"
+                    th:value="${searcheduser.userId}"
+                  />
+                  <input
+                    type="hidden"
+                    name="followerId"
+                    th:value="${loggedInUserId}"
+                  />
+                  <input
+                    type="hidden"
+                    name="followingId"
+                    th:value="${searcheduser.userId}"
+                  />
+                  <button type="submit" class="btn btn-primary">Follow</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <hr class="hr" />
+
+          <!-- Blogs Section -->
 
           <div th:each="blog : ${userBlogs}" class="blog">
-            <div class="d-flex justify-content-between align-items-center">
-              <h3 class="fw-bold text-primary" th:text="${blog.title}"></h3>
+            <div class="card mb-3">
+              <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a
+                    th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${user.userId}}"
+                  >
+                    <img
+                      th:if="${not #strings.isEmpty(blog.imagePath)}"
+                      th:src="@{${blog.imagePath}}"
+                      class="card-img-top"
+                      alt="Blog Image"
+                    />
+                  </a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h2 class="fw-bold text-primary" th:text="${blog.title}"></h2>
+                </div>
+              </div>
+              <div class="card-body">
+                <p
+                  class="card-text"
+                  th:text="${#strings.length(blog.content) > 200 ? #strings.substring(blog.content, 0, 200) + '...' : blog.content}"
+                ></p>
+              </div>
             </div>
-
-            <p class="mb-2" th:text="${#strings.substring(blog.content, 0, 100)}"></p>
-           
-            <hr class="hr" />
-
           </div>
-          
         </div>
       </div>
     </div>

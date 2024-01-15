@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.blog_application.blog_application.exception.AlertException;
@@ -19,6 +20,7 @@ import com.blog_application.blog_application.model.Blog;
 import com.blog_application.blog_application.model.Comment;
 import com.blog_application.blog_application.model.User;
 import com.blog_application.blog_application.model.MySearchResult;
+import com.blog_application.blog_application.model.Tag;
 import com.blog_application.blog_application.service.BlogService;
 import com.blog_application.blog_application.service.CommentService;
 import com.blog_application.blog_application.service.SearchService;
@@ -43,44 +45,15 @@ public class MainController {
 		return "login";
 	}
 
-	@PostMapping("/login")
-	public String loginUser(@RequestParam String username, @RequestParam String password, Model model,
-			HttpSession session) {
-		try {
-			User loggedInUser = userService.loginUser(username, password);
-			model.addAttribute("user", loggedInUser);
-			session.setAttribute("user", loggedInUser);
-			List<Blog> followingBlogs = userService.getBlogsOfFollowingUsers(loggedInUser.getUserId());
-			model.addAttribute("followingBlogs", followingBlogs);
-			model.addAttribute("alert", new Alert("success", "Login successful"));
-			return "home";
-		} catch (AlertException e) {
-			model.addAttribute("alertType", e.getAlertType());
-			model.addAttribute("alertMessage", e.getMessage());
-			return "login";
-		}
-	}
-
-	@GetMapping("/home")
-	public String home(Model model, HttpSession session) {
-		if (session.getAttribute("user") != null) {
-			User user = (User) session.getAttribute("user");
-			User userProfile = userService.getUserById(user.getUserId());
-			model.addAttribute("user", userProfile);
-
-			List<Blog> followingBlogs = userService.getBlogsOfFollowingUsers(userProfile.getUserId());
-			model.addAttribute("followingBlogs", followingBlogs);
-
-			return "home";
-		} else {
-			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
-			return "redirect:/";
-		}
-	}
-
 	@GetMapping("/register")
 	public String register() {
 		return "register";
+	}
+
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/";
 	}
 
 	@PostMapping("/register")
@@ -88,6 +61,7 @@ public class MainController {
 		try {
 			User registeredUser = userService.registerUser(user);
 			model.addAttribute("user", registeredUser);
+
 			return "redirect:/";
 		} catch (AlertException e) {
 			model.addAttribute("alertType", e.getAlertType());
@@ -106,6 +80,7 @@ public class MainController {
 		try {
 			userService.generateResetToken(email);
 			model.addAttribute("email", email);
+
 			return "/verify-reset-token";
 		} catch (AlertException e) {
 			model.addAttribute("alertType", "error");
@@ -121,6 +96,7 @@ public class MainController {
 		try {
 			userService.verifyResetToken(email, token);
 			model.addAttribute("email", email);
+
 			return "/reset-password";
 		} catch (AlertException e) {
 			model.addAttribute("alertType", "error");
@@ -144,14 +120,113 @@ public class MainController {
 		}
 	}
 
+	@PostMapping("/login")
+	public String loginUser(@RequestParam String username, @RequestParam String password, Model model,
+			HttpSession session) {
+		try {
+			User loggedInUser = userService.loginUser(username, password);
+			model.addAttribute("alert", new Alert("success", "Login successful"));
+			model.addAttribute("user", loggedInUser);
+			session.setAttribute("user", loggedInUser);
+
+			List<Blog> followingBlogs = userService.getBlogsOfFollowingUsers(loggedInUser.getUserId());
+			model.addAttribute("followingBlogs", followingBlogs);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
+			return "home";
+		} catch (AlertException e) {
+			model.addAttribute("alertType", e.getAlertType());
+			model.addAttribute("alertMessage", e.getMessage());
+			return "login";
+		}
+	}
+
+	@GetMapping("/home")
+	public String home(Model model, HttpSession session) {
+		if (session.getAttribute("user") != null) {
+			User user = (User) session.getAttribute("user");
+
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+
+			List<Blog> followingBlogs = userService.getBlogsOfFollowingUsers(loggedInUser.getUserId());
+			model.addAttribute("followingBlogs", followingBlogs);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
+			return "home";
+		} else {
+			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
+			return "redirect:/";
+		}
+	}
+
+	@GetMapping("/blogs/{tag}")
+	public String blogsByTag(@PathVariable Tag tag, Model model, HttpSession session) {
+		if (session.getAttribute("user") != null) {
+			User user = (User) session.getAttribute("user");
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+			List<Blog> blogs = blogService.getBlogsByTag(tag);
+			model.addAttribute("tag", tag);
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
+			if (!blogs.isEmpty()) {
+				blogs.forEach(blog -> {
+					User blogUser = userService.getUserById(blog.getAuthorId());
+					blog.setUserId(blogUser.getUserId());
+					blog.setUsername(blogUser.getUsername());
+				});
+				model.addAttribute("blogs", blogs);
+				return "bloglist";
+			} else {
+				model.addAttribute("noBlogsMessage", "No blogs found for the tag: " + tag);
+				return "bloglist";
+			}
+		} else {
+			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
+			return "/home";
+		}
+	}
+
 	@GetMapping("/profile")
 	public String viewProfile(Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
 			User user = (User) session.getAttribute("user");
-			User userProfile = userService.getUserById(user.getUserId());
+
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+
 			List<Blog> userBlogs = userService.getBlogsByUserId(user.getUserId());
-			model.addAttribute("user", userProfile);
 			model.addAttribute("blogs", userBlogs);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
 			return "profile";
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -163,8 +238,18 @@ public class MainController {
 	public String showUpdateProfilePage(Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
 			User user = (User) session.getAttribute("user");
-			User userProfile = userService.getUserById(user.getUserId());
-			model.addAttribute("user", userProfile);
+
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
 			return "update-profile";
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -176,8 +261,18 @@ public class MainController {
 	public String updateProfile(@ModelAttribute User user, Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
 			try {
-				User loggedinuser = (User) session.getAttribute("user");
-				userService.updateUserProfile(user.getUserId(), loggedinuser);
+				User loggedInUser = (User) session.getAttribute("user");
+				userService.updateUserProfile(user.getUserId(), loggedInUser);
+				model.addAttribute("user", loggedInUser);
+
+				model.addAttribute("tags", Tag.values());
+
+				List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+				model.addAttribute("followers", followers);
+
+				List<User> following = userService.getFollowing(loggedInUser.getUserId());
+				model.addAttribute("following", following);
+
 				return "redirect:/profile";
 			} catch (AlertException e) {
 				model.addAttribute("alertType", e.getAlertType());
@@ -194,7 +289,17 @@ public class MainController {
 	public String getPostBlogPage(Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
 			User user = (User) session.getAttribute("user");
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
 			model.addAttribute("user", user);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
 			return "post-blog";
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -210,11 +315,22 @@ public class MainController {
 			@RequestParam(value = "link2", required = false) String link2,
 			@RequestParam(value = "link3", required = false) String link3,
 			@RequestParam(value = "link4", required = false) String link4,
+			@RequestParam(value = "image", required = false) MultipartFile image,
 			HttpSession session, Model model) {
 		if (session.getAttribute("user") != null) {
 			User loggedInUser = (User) session.getAttribute("user");
 			String userId = loggedInUser.getUserId();
-			Blog createdBlog = blogService.createBlog(userId, title, content, selectedTags, link1, link2, link3, link4);
+
+			Blog createdBlog = blogService.createBlog(userId, title, content, selectedTags, link1, link2, link3, link4,
+					image);
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
 			return "redirect:/blog/" + createdBlog.getBlogId() + "/user/" + userId;
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -222,20 +338,25 @@ public class MainController {
 		}
 	}
 
-	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
-		return "redirect:/";
-	}
-
 	@PostMapping("/update-blog/{blogId}")
 	public String updateBlog(@PathVariable String blogId, Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
-			Blog blog = blogService.getBlog(blogId);
 			User user = (User) session.getAttribute("user");
-			User userProfile = userService.getUserById(user.getUserId());
-			model.addAttribute("user", userProfile);
+
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+
+			Blog blog = blogService.getBlog(blogId);
 			model.addAttribute("blog", blog);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
 			return "update-blog";
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -254,6 +375,7 @@ public class MainController {
 					updatedBlog.getLink2(),
 					updatedBlog.getLink3(),
 					updatedBlog.getLink4());
+
 			return "redirect:/profile";
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -272,67 +394,29 @@ public class MainController {
 		}
 	}
 
-	@GetMapping("/search")
-	public String search(@RequestParam(name = "query") String query, Model model, HttpSession session) {
-		if (session.getAttribute("user") != null) {
-			List<User> matchingUsers = searchService.searchUsers(query);
-			List<Blog> matchingBlogs = searchService.searchBlogs(query);
-			List<Blog> matchingBlogsByTag = searchService.searchBlogsByTag(query);
-			MySearchResult searchResult = new MySearchResult(matchingUsers, matchingBlogs, matchingBlogsByTag);
-			model.addAttribute("searchResult", searchResult);
-			User user = (User) session.getAttribute("user");
-			model.addAttribute("user", user);
-			return "search-results";
-		} else {
-			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
-			return "redirect:/";
-		}
-	}
-
-	@GetMapping("/followers/{userId}")
-	public String getFollowers(@PathVariable String userId, Model model, HttpSession session) {
-		if (session.getAttribute("user") != null) {
-			User user = (User) session.getAttribute("user");
-			User userProfile = userService.getUserById(user.getUserId());
-			model.addAttribute("user", userProfile);
-			List<User> followers = userService.getFollowers(userId);
-			model.addAttribute("followers", followers);
-			return "followerfollowing";
-		} else {
-			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
-			return "redirect:/";
-		}
-	}
-
-	@GetMapping("/following/{userId}")
-	public String getFollowing(@PathVariable String userId, Model model, HttpSession session) {
-		if (session.getAttribute("user") != null) {
-			User user = (User) session.getAttribute("user");
-			User userProfile = userService.getUserById(user.getUserId());
-			model.addAttribute("user", userProfile);
-			List<User> following = userService.getFollowing(userId);
-			model.addAttribute("following", following);
-			return "followerfollowing";
-		} else {
-			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
-			return "redirect:/";
-		}
-	}
-
 	@GetMapping("/userprofile/{userId}")
 	public String viewUserProfile(@PathVariable String userId, Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
 			User user = (User) session.getAttribute("user");
 			model.addAttribute("user", user);
 
-			User searcheduser = userService.getUserById(userId);
-			model.addAttribute("searcheduser", searcheduser);
+			User loggedInUser = userService.getUserById(userId);
+			model.addAttribute("searcheduser", loggedInUser);
 
 			List<Blog> userBlogs = userService.getBlogsByUserId(userId);
 			model.addAttribute("userBlogs", userBlogs);
 
 			boolean isFollowing = userService.isFollowing(user.getUserId(), userId);
 			model.addAttribute("isFollowing", isFollowing);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
 			return "userprofile";
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -351,6 +435,14 @@ public class MainController {
 
 			List<Blog> userBlogs = userService.getBlogsByUserId(userId);
 			model.addAttribute("userBlogs", userBlogs);
+
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
 
 			boolean isFollowing = userService.isFollowing(loggedInUser.getUserId(), userId);
 
@@ -383,6 +475,14 @@ public class MainController {
 			userService.unfollowUser(loggedInUser.getUserId(), userId);
 			model.addAttribute("message", "Successfully unfollowed");
 
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
+
 			return "redirect:/userprofile/" + userId;
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
@@ -392,6 +492,80 @@ public class MainController {
 
 	@GetMapping("/blog/{blogId}/user/{userId}")
 	public String showBlogDetails(@PathVariable String blogId, @PathVariable String userId, Model model,
+			HttpSession session) {
+		if (session.getAttribute("user") != null) {
+			User user = (User) session.getAttribute("user");
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+			Optional<Blog> blogOptional = blogService.getBlogDetails(blogId, userId);
+			List<Comment> comments = commentService.getCommentsWithUserDetails(blogId);
+
+			if (blogOptional.isPresent()) {
+				Blog blog = blogOptional.get();
+				User blogUser = userService.getUserById(blog.getAuthorId());
+				blog.setUserId(blogUser.getUserId());
+				blog.setUsername(blogUser.getUsername());
+
+				model.addAttribute("blog", blog);
+				model.addAttribute("comments", comments);
+				model.addAttribute("tags", Tag.values());
+
+				List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+				model.addAttribute("followers", followers);
+
+				List<User> following = userService.getFollowing(loggedInUser.getUserId());
+				model.addAttribute("following", following);
+				return "blog";
+			} else {
+				model.addAttribute("alert", new Alert("error", "Blog not found."));
+				return "redirect:/";
+			}
+		} else {
+			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
+			return "redirect:/";
+		}
+	}
+
+	@GetMapping("/search")
+	public String search(@RequestParam(name = "query") String query, Model model, HttpSession session) {
+		if (session.getAttribute("user") != null) {
+			User user = (User) session.getAttribute("user");
+			User loggedInUser = userService.getUserById(user.getUserId());
+			model.addAttribute("user", loggedInUser);
+			List<User> matchingUsers = searchService.searchUsers(query);
+			List<Blog> matchingBlogs = searchService.searchBlogs(query);
+			List<Blog> matchingBlogsByTag = searchService.searchBlogsByTag(query);
+
+			matchingBlogs.forEach(blog -> {
+				User author = userService.getUserById(blog.getAuthorId());
+				if (author != null) {
+					blog.setUsername(author.getUsername());
+					blog.setUserId(author.getUserId());
+				}
+			});
+
+			MySearchResult searchResult = new MySearchResult(matchingUsers, matchingBlogs, matchingBlogsByTag);
+
+			model.addAttribute("searchResult", searchResult);
+			model.addAttribute("user", user);
+			model.addAttribute("userLoggedIn", user.getUsername());
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following); // Add userLoggedIn attribute
+
+			return "search-results";
+		} else {
+			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
+			return "redirect:/";
+		}
+	}
+
+	@GetMapping("/blogdetails/{blogId}/user/{userId}")
+	public String BlogDetails(@PathVariable String blogId, @PathVariable String userId, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		if (session.getAttribute("user") != null) {
 			User loggedInUser = (User) session.getAttribute("user");
@@ -408,7 +582,14 @@ public class MainController {
 
 				model.addAttribute("blog", blog);
 				model.addAttribute("comments", comments);
-				return "blog";
+				model.addAttribute("tags", Tag.values());
+
+				List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+				model.addAttribute("followers", followers);
+
+				List<User> following = userService.getFollowing(loggedInUser.getUserId());
+				model.addAttribute("following", following);
+				return "blogdetails";
 			} else {
 				model.addAttribute("alert", new Alert("error", "Blog not found."));
 				return "redirect:/";
@@ -431,6 +612,13 @@ public class MainController {
 
 		if (loggedInUser != null) {
 			commentService.addComment(comment, userId, blogId);
+			model.addAttribute("tags", Tag.values());
+
+			List<User> followers = userService.getFollowers(loggedInUser.getUserId());
+			model.addAttribute("followers", followers);
+
+			List<User> following = userService.getFollowing(loggedInUser.getUserId());
+			model.addAttribute("following", following);
 
 			return "redirect:/blog/" + blogId + "/user/" + bloguserId;
 		} else {

@@ -23,7 +23,7 @@ import com.blog_application.blog_application.repository.BlogRepository;
 import com.blog_application.blog_application.repository.CommentRepository;
 import com.blog_application.blog_application.repository.FollowRepository;
 import com.blog_application.blog_application.repository.UserRepository;
-import java.util.function.Function; // Make sure to import Function
+import java.util.function.Function;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -40,9 +40,6 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private CommentRepository commentRepository;
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -177,29 +174,29 @@ public class UserServiceImpl implements UserService {
 			if (optionalUser.isPresent()) {
 				User existingUser = optionalUser.get();
 
-				// Check if the updated username already exists for another user
 				if (!existingUser.getUsername().equals(user.getUsername())
 						&& userRepository.findByUsername(user.getUsername()) != null) {
 					throw new AlertException("error", "Username already exists");
 				}
 
-				// Check if the updated email already exists for another user
 				if (!existingUser.getEmail().equals(user.getEmail())
 						&& userRepository.findByEmail(user.getEmail()) != null) {
 					throw new AlertException("error", "Email already exists");
 				}
 
-				// Update fields you want to allow updating
 				existingUser.setName(user.getName());
 				existingUser.setUsername(user.getUsername());
 				existingUser.setEmail(user.getEmail());
 
-				// Update password if a new password is provided and meets validation criteria
-				String newPassword = user.getPassword();
-				if (newPassword != null && !newPassword.isEmpty() && !PasswordValidator.isValidPassword(newPassword)) {
-					throw new AlertException("note", "Invalid password. Please choose a stronger password.");
-				} else if (newPassword != null && !newPassword.isEmpty()) {
-					String encodedPassword = passwordEncoder.encode(newPassword);
+				// Check if a new password is provided
+				if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+					// Validate the new password
+					if (!PasswordValidator.isValidPassword(user.getPassword())) {
+						throw new AlertException("note", "Invalid password. Please choose a stronger password.");
+					}
+
+					// Encode and set the new password
+					String encodedPassword = passwordEncoder.encode(user.getPassword());
 					existingUser.setPassword(encodedPassword);
 				}
 

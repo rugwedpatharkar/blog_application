@@ -1,275 +1,253 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.com">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BlogBuddy</title>
-    <link th:href="@{/img/favicon.png}" rel="icon"/>
+    <link th:href="@{/img/favicon.png}" rel="icon" />
     <link
-            th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-            crossorigin="anonymous"
+      th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
     />
-<style>
-  body {
-    background-color: #f8f9fa;
-    font-family: 'Arial', sans-serif;
-}
-
-/* Common Styling for Containers */
-.container,
-.profile-container {
-    margin-top: 50px;
-    max-width: 800px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    animation: fadeInUp 0.5s ease-out;
-}
-
-/* Common Styling for Headings */
-h2,
-h3 {
-    color: #007bff;
-}
-
-/* Common Styling for Form Groups */
-.form-group,
-.profile-info,
-{
-    margin-bottom: 20px;
-}
-.profile-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-
-
-.profile-info div {
-    flex-grow: 1;
-}
-
-.follower-info {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-}
-
-.follower-info div {
-    text-align: center;
-    flex-grow: 1;
-}
-
-.update-buttons {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.update-buttons button {
-    margin-right: 10px;
-}
-/* Common Styling for Labels */
-.form-label {
-    font-weight: bold;
-    color: #333;
-}
-
-/* Common Styling for Form Controls */
-.form-control {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    width: 100%;
-    padding: 8px;
-}
-
-/* Common Styling for Form Checks */
-.form-check {
-    margin-right: 10px;
-}
-
-/* Common Styling for Primary Buttons */
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-/* Custom Animation */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.navbar-brand img {
-    max-height: 40px; /* Adjust the height as needed */
-}
-</style>
-    
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold fs-5" style="color: #ea721e" href="/home">
-            <img th:src="@{/img/favicon.png}" alt="BlobBuddy Logo"/> BlogBuddy
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a
+          class="navbar-brand fw-bold fs-4"
+          style="color: #ea721e"
+          href="/home"
+        >
+          <img
+            th:src="@{/img/favicon.png}"
+            style="max-height: 40px"
+            alt="BlobBuddy Logo"
+          />
+          BlogBuddy
         </a>
-        <form class="d-flex align-items-center nav-search" method="GET" th:action="@{/search}" role="search">
-          <input class="form-control me-2" type="search" name="query" id="query" placeholder="Search" aria-label="Search"/>
-          <button class="btn" style="background-color: #ea721e" type="submit">Search</button>
-      </form>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a type="button" class="btn btn-light fw-bolder me-3" th:href="@{/post-blog}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                             class="bi bi-plus" viewBox="0 0 20 20">
-                            <path
-                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                        </svg>
-                        Add Blog</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle ml-3 text-light fw-bolder" role="button"
-                       data-bs-toggle="dropdown"
-                       aria-expanded="false">
-                        <span th:text="${user.username}"></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" th:href="@{/profile}">Profile</a></li>
-                        <li><hr class="dropdown-divider"/></li>
-                        <li>
-                            <a class="dropdown-item" th:href="@{/logout}">Logout</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div th:if="${alertMessage}" th:class="'alert alert-' + ${alertType} + ' align-items-center alert-dismissible fade show '" role="alert">
-    <strong th:text="${alertType}"></strong> <span th:text="${alertMessage}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<div th:if="${alert}" th:class="'alert alert-' + ${alert.type} + ' alert-dismissible fade show'" role="alert">
-    <strong th:text="${alert.type}"></strong> <span th:text="${alert.message}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-
-    <div class="container mt-5">
-        <div class="profile-info">
-          <div class="row">
-            <h2 th:text="${user.username}" class="fw-bold col-sm"></h2>
-            <a
-              class="btn btn-success fw-bolder col-sm "
-              th:href="@{/update-profile}"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="30"
-                height="30"
-                fill="currentColor"
-                class="bi bi-pencil-square"
-                viewBox="0 0 20 20"
+        <form
+          class="d-flex align-items-center nav-search"
+          method="GET"
+          th:action="@{/search}"
+          role="search"
+        >
+          <input
+            class="form-control me-2"
+            type="search"
+            name="query"
+            id="query"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button class="btn" style="background-color: #ea721e" type="submit">
+            Search
+          </button>
+        </form>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarSupportedContent"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                type="button"
+                class="btn btn-light fw-bolder me-3"
+                th:href="@{/post-blog}"
               >
-                <path
-                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-                />
-                <path
-                  fill-rule="evenodd"
-                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                />
-              </svg>Update
-            </a>
-            <p class="text-muted" th:text="${user.name}"></p>
-            <p class="text-muted" th:text="${user.email}"></p>
-          </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  class="bi bi-plus"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+                  />
+                </svg>
+                Add Blog</a
+              >
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-light fw-bolder" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+               <span class="h5" th:text="${user.username}"></span>
+           </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" th:href="@{/profile}">Profile</a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" th:href="@{/logout}">Logout</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
-        <hr class="hr" />
+      </div>
+    </nav>
 
-        <!-- Blogs Section -->
-        <div class="blogs">
-          <h2 class="fw-bold mb-3"> Your Blogs</h2>
+    <div
+      th:if="${alertMessage}"
+      th:class="'alert alert-' + ${alertType} + ' align-items-center alert-dismissible fade show '"
+      role="alert"
+    >
+      <strong th:text="${alertType}"></strong>
+      <span th:text="${alertMessage}"></span>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div
+      th:if="${alert}"
+      th:class="'alert alert-' + ${alert.type} + ' alert-dismissible fade show'"
+      role="alert"
+    >
+      <strong th:text="${alert.type}"></strong>
+      <span th:text="${alert.message}"></span>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
 
-          <div th:each="blog : ${blogs}" class="blog">
-            <div class="d-flex justify-content-between align-items-center">
-              <!-- Blog title -->
-              <a class="text-muted text-decoration-none" th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"> <h3 class="fw-bold text-primary" th:text="${blog.title}"></h3></a>
-
-              <!-- Add buttons for update and delete -->
-              <div>
-                <form
-                  th:action="@{/update-blog/{blogId}(blogId=${blog.blogId})}"
-                  method="post"
-                  style="display: inline"
-                >
-                  <button type="submit" class="btn btn-primary">
-                    <!-- SVG icon for edit -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-pencil-square"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-                      />
-                      <path
-                        fill-rule="evenodd"
-                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                      />
-                    </svg>
-                  </button>
-                </form>
-                <form
-                  th:action="@{/delete-blog/{blogId}(blogId=${blog.blogId})}"
-                  method="post"
-                  style="display: inline"
-                >
-                  <button type="submit" class="btn btn-danger">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-trash"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
-                      />
-                      <path
-                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
-                      />
-                    </svg>
-                  </button>
-                </form>
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card mb-2">
+            <div class="card-header">
+              <h2 class="fw-bold">Tags</h2>
+            </div>
+            <div class="card-body">
+              <div class="d-flex flex-wrap">
+                <div th:each="tag : ${tags}" class="me-2 mb-2">
+                  <a
+                    th:href="@{'/blogs/' + ${tag}}"
+                    class="text-decoration-none text-body"
+                  >
+                    <span class="fw-bolder badge bg-primary"
+                      >#<span th:text="${tag}"></span
+                    ></span>
+                  </a>
+                </div>
               </div>
             </div>
-
-            <p class="mb-2" th:text="${#strings.substring(blog.content, 0, 100)}"></p>
-           
-            <hr class="hr" />
-
           </div>
-          
+        </div>
+        <!-- Profile Info Section -->
+        <div class="col-md-5">
+          <div class="card p-3 profile-info">
+            <div>
+              <h1 class="fw-bold mb-2 text-primary">Profile</h1>
+              <h3 th:text="${user.username}" class="fw-bold col-sm"></h3>
+              <p class="text-muted mt-3" th:text="${user.name}"></p>
+              <p class="text-muted" th:text="${user.email}"></p>
+              <a class="btn btn-success fw-bolder" th:href="@{/update-profile}">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="30"
+                  height="30"
+                  fill="currentColor"
+                  class="bi bi-pencil-square"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                  />
+                </svg>
+                Update
+              </a>
+            </div>
+          </div>
+          <hr class="mt-4" />
+
+          <!-- Blogs Section -->
+          <div class="blogs mt-4">
+            <h2 class="fw-bold mb-2 text-primary">Blogs</h2>
+            <div th:each="blog : ${blogs}" class="blog">
+              <div class="card mb-3">
+                <div class="card-header">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <a
+                      th:href="@{'/blogdetails/' + ${blog.blogId} + '/user/' + ${user.userId}}"
+                    >
+                      <img
+                        th:if="${not #strings.isEmpty(blog.imagePath)}"
+                        th:src="@{${blog.imagePath}}"
+                        class="card-img-top"
+                        alt="Blog Image"
+                      />
+                    </a>
+                  </div>
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <a
+                      th:href="@{'/blogdetails/' + ${blog.blogId} + '/user/' + ${user.userId}}"
+                    >
+                      <h2
+                        class="fw-bold text-primary"
+                        th:text="${blog.title}"
+                      ></h2>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <p
+                    class="card-text"
+                    th:text="${#strings.length(blog.content) > 200 ? #strings.substring(blog.content, 0, 200) + '...' : blog.content}"
+                  ></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags Section -->
+
+        <!-- Followers Section -->
+        <div class="col-md-2">
+          <div class="card followers-following-card p-3">
+            <h2 class="fw-bold mb-2 text-primary">Followers</h2>
+            <div th:each="follower : ${followers}">
+              <a
+                class="text-muted text-decoration-none"
+                th:href="@{/userprofile/{userId}(userId=${follower.userId})}"
+              >
+                <h5 th:text="${'@' + follower.username}"></h5>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Following Section -->
+        <div class="col-md-2">
+          <div class="card followers-following-card p-3">
+            <h2 class="fw-bold mb-2 text-primary">Following</h2>
+            <div th:each="followed : ${following}">
+              <a
+                class="text-muted text-decoration-none"
+                th:href="@{/userprofile/{userId}(userId=${followed.userId})}"
+              >
+                <h5 th:text="${'@' + followed.username}"></h5>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

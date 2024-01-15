@@ -11,162 +11,21 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
-    <style>
-      body {
-        background-color: #f8f9fa;
-        font-family: "Arial", sans-serif;
-      }
-
-      /* Common Styling for Containers */
-      .container,
-      .profile-container {
-        margin-top: 50px;
-        max-width: 800px; 
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-        animation: fadeInUp 0.5s ease-out;
-      }
-
-      /* Common Styling for Headings */
-      h2,
-      h3 {
-        color: #007bff;
-      }
-
-      /* Common Styling for Form Groups */
-      .form-group,
-      .profile-info {
-        margin-bottom: 20px;
-      }
-
-      .profile-info {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .profile-info div {
-        flex-grow: 1;
-      }
-
-      .follower-info {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 20px;
-      }
-
-      .follower-info div {
-        text-align: center;
-        flex-grow: 1;
-      }
-
-      .update-buttons {
-        text-align: center;
-        margin-top: 20px;
-      }
-
-      .update-buttons button {
-        margin-right: 10px;
-      }
-
-      /* Common Styling for Labels */
-      .form-label {
-        font-weight: bold;
-        color: #333;
-      }
-
-      /* Common Styling for Form Controls */
-      .form-control {
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        width: 100%;
-        padding: 8px;
-      }
-
-      /* Common Styling for Form Checks */
-      .form-check {
-        margin-right: 10px;
-      }
-
-      /* Common Styling for Primary Buttons */
-      .btn-primary {
-        background-color: #007bff;
-        border: none;
-        transition: background-color 0.3s ease;
-      }
-
-      .btn-primary:hover {
-        background-color: #0056b3;
-      }
-
-      /* Custom Animation */
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .navbar-brand img {
-        max-height: 40px; /* Adjust the height as needed */
-      }
-
-      .blog h3 {
-        color: #007bff;
-        margin-bottom: 10px;
-      }
-
-      .blog p {
-        margin-bottom: 10px;
-      }
-
-      .blog hr {
-        border-color: #ccc;
-        margin-top: 20px;
-        margin-bottom: 0;
-      }
-      .blog {
-        animation: fadeInUp 0.5s ease-out;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      /* Add shadow and center the "show more" button */
-      .show-more {
-        color: #007bff;
-        text-decoration: none;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .show-more:hover {
-        text-decoration: underline;
-      }
-
-      /* Add styles for the card */
-      .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-      }
-    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
+      <div class="container">
         <a
           class="navbar-brand fw-bold fs-5"
           style="color: #ea721e"
           href="/home"
         >
-          <img th:src="@{/img/favicon.png}" alt="BlobBuddy Logo" /> BlogBuddy
+          <img
+            th:src="@{/img/favicon.png}"
+            style="max-height: 40px"
+            alt="BlobBuddy Logo"
+          />
+          BlogBuddy
         </a>
         <form
           class="d-flex align-items-center nav-search"
@@ -207,26 +66,23 @@
                 >
                   <path
                     d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
-                  />
+                  ></path>
                 </svg>
-                Add Blog</a
-              >
+                Add Blog
+              </a>
             </li>
             <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle ml-3 text-light fw-bolder"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <span th:text="${user.username}"></span>
-              </a>
+              <a class="nav-link dropdown-toggle text-light fw-bolder" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="h5" th:text="${user.username}"></span>
+                    </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <a class="dropdown-item" th:href="@{/profile}">Profile</a>
                 </li>
-                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
                 <li>
                   <a class="dropdown-item" th:href="@{/logout}">Logout</a>
                 </li>
@@ -266,32 +122,84 @@
       ></button>
     </div>
 
-    <div class="container mt-5">
-      <h2 class="fw-bold mb-3 text-black">Blogs</h2>
-
-      <div th:each="blog : ${followingBlogs}" class="blog">
-        <div class="card mb-3">
-          <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-              <a
-                class="text-muted text-decoration-none"
-                th:href="@{/userprofile/{userId}(userId=${blog.userId})}"
-              >
-                <h5 th:text="${'@' + blog.username}"></h5>
-              </a>
+    <div class="container mt-4">
+      <div class="row">
+        <!-- Tag List Section -->
+        <div class="col-md-3">
+          <div class="card mb-3">
+            <div class="card-header">
+              <h2 class="fw-bold">Tags</h2>
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <a  th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"> <h2 class="fw-bold text-primary" th:text="${blog.title}"></h2></a>
+            <div class="card-body">
+              <div class="d-flex flex-wrap">
+                <div th:each="tag : ${tags}" class="me-2 mb-2">
+                  <a
+                    th:href="@{'/blogs/' + ${tag}}"
+                    class="text-decoration-none text-body"
+                  >
+                    <span class="fw-bolder badge bg-primary"
+                      >#<span th:text="${tag}"></span
+                    ></span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="card-body">
-            <p
-              class="card-text"
-              th:text="${#strings.length(blog.content) > 300 ? #strings.substring(blog.content, 0, 300) + '...' : blog.content}"
-            ></p>
-            <div class="d-flex flex-column align-items-center mt-3">
-                <a class="btn btn-link show-more" th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}">Show
-                    More</a>
+        </div>
+        <!-- Blog Section -->
+        <div class="col-md-8">
+          <div class="card blog-card p-3">
+            <h2 class="fw-bold mb-3 text-black">Blogs</h2>
+            <div th:each="blog : ${followingBlogs}">
+              <div class="card blog-card mb-4">
+                <div class="card-header">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                  <a th:if="${blog.userId == user.userId}"
+                  class="text-muted text-decoration-none"
+                  th:href="@{/profile}">
+                   <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
+               </a>
+               <a th:unless="${blog.userId == user.userId}"
+                  class="text-muted text-decoration-none"
+                  th:href="@{/userprofile/{userId}(userId=${blog.userId})}">
+                   <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
+               </a>
+                  </div>
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <a
+                      th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"
+                    >
+                      <img
+                        th:if="${not #strings.isEmpty(blog.imagePath)}"
+                        th:src="@{${blog.imagePath}}"
+                        class="card-img-top"
+                        alt="Blog Image"
+                      />
+                      <h2
+                        class="fw-bold text-primary"
+                        th:text="${blog.title}"
+                      ></h2>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <p
+                    class="card-text"
+                    th:text="${#strings.length(blog.content) > 300 ? #strings.substring(blog.content, 0, 300) + '...' : blog.content}"
+                  ></p>
+                  <div class="d-flex flex-column align-items-center mt-3">
+                    <a
+                      class="btn btn-primary show-more"
+                      th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"
+                      >Show More</a
+                    >
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

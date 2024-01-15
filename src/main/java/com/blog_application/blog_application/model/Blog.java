@@ -28,16 +28,13 @@ public class Blog {
     private String link2;
     private String link3;
     private String link4;
-
+    private String imagePath;
     @CreatedDate
     private LocalDateTime creationDate;
 
-    public Blog() {
-    }
-
     public Blog(String blogId, String title, String content, String authorId, String userId, String username,
             List<String> commentIds, List<String> tags, String link1, String link2, String link3, String link4,
-            LocalDateTime creationDate) {
+            String imagePath, LocalDateTime creationDate) {
         this.blogId = blogId;
         this.title = title;
         this.content = content;
@@ -50,6 +47,7 @@ public class Blog {
         this.link2 = link2;
         this.link3 = link3;
         this.link4 = link4;
+        this.imagePath = imagePath;
         this.creationDate = creationDate;
     }
 
@@ -149,6 +147,14 @@ public class Blog {
         this.link4 = link4;
     }
 
+    public String getImagePath() {
+        return this.imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public LocalDateTime getCreationDate() {
         return this.creationDate;
     }
@@ -172,8 +178,12 @@ public class Blog {
                 ", link2='" + getLink2() + "'" +
                 ", link3='" + getLink3() + "'" +
                 ", link4='" + getLink4() + "'" +
+                ", imagePath='" + getImagePath() + "'" +
                 ", creationDate='" + getCreationDate() + "'" +
                 "}";
+    }
+
+    public Blog() {
     }
 
 }
