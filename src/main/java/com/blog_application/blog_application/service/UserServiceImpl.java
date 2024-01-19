@@ -20,7 +20,6 @@ import com.blog_application.blog_application.model.Blog;
 import com.blog_application.blog_application.model.Follow;
 import com.blog_application.blog_application.model.User;
 import com.blog_application.blog_application.repository.BlogRepository;
-import com.blog_application.blog_application.repository.CommentRepository;
 import com.blog_application.blog_application.repository.FollowRepository;
 import com.blog_application.blog_application.repository.UserRepository;
 import java.util.function.Function;
@@ -168,37 +167,40 @@ public class UserServiceImpl implements UserService {
 		return String.valueOf(otp);
 	}
 
-	public User updateUserProfile(String userId, User user) {
+	@Override
+	public User updateUserProfile(String userId, User updatedUser) {
 		try {
 			Optional<User> optionalUser = userRepository.findById(userId);
 			if (optionalUser.isPresent()) {
 				User existingUser = optionalUser.get();
 
-				if (!existingUser.getUsername().equals(user.getUsername())
-						&& userRepository.findByUsername(user.getUsername()) != null) {
-					throw new AlertException("error", "Username already exists");
-				}
-
-				if (!existingUser.getEmail().equals(user.getEmail())
-						&& userRepository.findByEmail(user.getEmail()) != null) {
-					throw new AlertException("error", "Email already exists");
-				}
-
-				existingUser.setName(user.getName());
-				existingUser.setUsername(user.getUsername());
-				existingUser.setEmail(user.getEmail());
-
 				// Check if a new password is provided
-				if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+				if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
 					// Validate the new password
-					if (!PasswordValidator.isValidPassword(user.getPassword())) {
+					if (!PasswordValidator.isValidPassword(updatedUser.getPassword())) {
 						throw new AlertException("note", "Invalid password. Please choose a stronger password.");
 					}
 
 					// Encode and set the new password
-					String encodedPassword = passwordEncoder.encode(user.getPassword());
+					String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
 					existingUser.setPassword(encodedPassword);
 				}
+
+				// Check for uniqueness only if username or email is updated
+				if (!existingUser.getUsername().equals(updatedUser.getUsername())
+						&& userRepository.findByUsername(updatedUser.getUsername()) != null) {
+					throw new AlertException("error", "Username already exists");
+				}
+
+				if (!existingUser.getEmail().equals(updatedUser.getEmail())
+						&& userRepository.findByEmail(updatedUser.getEmail()) != null) {
+					throw new AlertException("error", "Email already exists");
+				}
+
+				// Update other fields
+				existingUser.setName(updatedUser.getName());
+				existingUser.setUsername(updatedUser.getUsername());
+				existingUser.setEmail(updatedUser.getEmail());
 
 				// Add other fields as needed
 

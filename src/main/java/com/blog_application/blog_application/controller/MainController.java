@@ -258,13 +258,16 @@ public class MainController {
 	}
 
 	@PostMapping("/update")
-	public String updateProfile(@ModelAttribute User user, Model model, HttpSession session) {
+	public String updateProfile(@ModelAttribute User updatedUser, Model model, HttpSession session) {
 		if (session.getAttribute("user") != null) {
 			try {
 				User loggedInUser = (User) session.getAttribute("user");
-				userService.updateUserProfile(user.getUserId(), loggedInUser);
-				model.addAttribute("user", loggedInUser);
 
+				System.out.println("Received user data for update in controller: " + updatedUser.toString());
+
+				userService.updateUserProfile(loggedInUser.getUserId(), updatedUser);
+
+				model.addAttribute("user", loggedInUser);
 				model.addAttribute("tags", Tag.values());
 
 				List<User> followers = userService.getFollowers(loggedInUser.getUserId());
@@ -272,6 +275,8 @@ public class MainController {
 
 				List<User> following = userService.getFollowing(loggedInUser.getUserId());
 				model.addAttribute("following", following);
+
+				System.out.println("Updated user data in controller: " + loggedInUser.toString());
 
 				return "redirect:/profile";
 			} catch (AlertException e) {
@@ -331,7 +336,7 @@ public class MainController {
 			List<User> following = userService.getFollowing(loggedInUser.getUserId());
 			model.addAttribute("following", following);
 
-			return "redirect:/blog/" + createdBlog.getBlogId() + "/user/" + userId;
+			return "redirect:/blogdetails/" + createdBlog.getBlogId() + "/user/" + userId;
 		} else {
 			model.addAttribute("alert", new Alert("error", "Something went wrong, Please Login again."));
 			return "redirect:/";
