@@ -86,9 +86,7 @@ The Blog Application blends Java, Spring Boot, MongoDB, HTML, CSS, and Bootstrap
 - **Development Tool:**
   - Visual Studio Code (VS Code)
 
-## Getting Started
 
-1. Clone the repository:
+Project link: [Blog Application](https://blog-application-01rp.onrender.com/)
 
-   ```bash
-   git clone https://github.com/rugwedpatharkar/blog_application.git
+Deployed using Render for the Spring Boot application and MongoDB Atlas for cloud database storage.
