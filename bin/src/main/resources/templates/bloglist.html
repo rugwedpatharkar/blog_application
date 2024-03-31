@@ -16,7 +16,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a
-          class="navbar-brand fw-bold fs-5"
+          class="navbar-brand fw-bold fs-4"
           style="color: #ea721e"
           href="/home"
         >
@@ -72,10 +72,15 @@
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-light fw-bolder" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="h5" th:text="${user.username}"></span>
-                    </a>
+              <a
+                class="nav-link dropdown-toggle ml-3 text-light fw-bolder"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span th:text="${user.username}"></span>
+              </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <a class="dropdown-item" th:href="@{/profile}">Profile</a>
@@ -150,22 +155,32 @@
         <div class="col-md-8">
           <div class="card blog-card p-3">
             <h2 class="fw-bold mb-3 text-black">Blogs</h2>
-            <div th:each="blog : ${followingBlogs}">
-              <div class="card blog-card mb-4">
+            <div th:if="${blogs}">
+              <div th:each="blog : ${blogs}" class="card blog-card mb-4">
                 <div class="card-header">
                   <div
                     class="d-flex justify-content-between align-items-center"
                   >
-                  <a th:if="${blog.userId == user.userId}"
-                  class="text-muted text-decoration-none"
-                  th:href="@{/profile}">
-                   <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
-               </a>
-               <a th:unless="${blog.userId == user.userId}"
-                  class="text-muted text-decoration-none"
-                  th:href="@{/userprofile/{userId}(userId=${blog.userId})}">
-                   <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
-               </a>
+                    <a
+                      th:if="${blog.userId == user.userId}"
+                      class="text-muted text-decoration-none"
+                      th:href="@{/profile}"
+                    >
+                      <p
+                        class="card-text fw-bold h4"
+                        th:text="${'@'+blog.username}"
+                      ></p>
+                    </a>
+                    <a
+                      th:unless="${blog.userId == user.userId}"
+                      class="text-muted text-decoration-none"
+                      th:href="@{/userprofile/{userId}(userId=${blog.userId})}"
+                    >
+                      <p
+                        class="card-text fw-bold h4"
+                        th:text="${'@'+blog.username}"
+                      ></p>
+                    </a>
                   </div>
                   <div
                     class="d-flex justify-content-between align-items-center"
@@ -200,6 +215,9 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div th:unless="${blogs}">
+              <p th:text="${noBlogsMessage}"></p>
             </div>
           </div>
         </div>

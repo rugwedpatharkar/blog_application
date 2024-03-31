@@ -66,16 +66,21 @@
                 >
                   <path
                     d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
-                  ></path>
+                  />
                 </svg>
                 Add Blog
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-light fw-bolder" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="h5" th:text="${user.username}"></span>
-                    </a>
+              <a
+                class="nav-link dropdown-toggle ml-3 text-light fw-bolder"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span th:text="${user.username}"></span>
+              </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <a class="dropdown-item" th:href="@{/profile}">Profile</a>
@@ -124,7 +129,7 @@
 
     <div class="container mt-4">
       <div class="row">
-        <!-- Tag List Section -->
+        <!-- Tags Section -->
         <div class="col-md-3">
           <div class="card mb-3">
             <div class="card-header">
@@ -146,60 +151,104 @@
             </div>
           </div>
         </div>
-        <!-- Blog Section -->
+
+        <!-- Update Blog Section -->
         <div class="col-md-8">
-          <div class="card blog-card p-3">
-            <h2 class="fw-bold mb-3 text-black">Blogs</h2>
-            <div th:each="blog : ${followingBlogs}">
-              <div class="card blog-card mb-4">
-                <div class="card-header">
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                  <a th:if="${blog.userId == user.userId}"
-                  class="text-muted text-decoration-none"
-                  th:href="@{/profile}">
-                   <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
-               </a>
-               <a th:unless="${blog.userId == user.userId}"
-                  class="text-muted text-decoration-none"
-                  th:href="@{/userprofile/{userId}(userId=${blog.userId})}">
-                   <p class="card-text fw-bold h4" th:text="${'@'+blog.username}"></p>
-               </a>
-                  </div>
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <a
-                      th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"
-                    >
-                      <img
-                        th:if="${not #strings.isEmpty(blog.imagePath)}"
-                        th:src="@{${blog.imagePath}}"
-                        class="card-img-top"
-                        alt="Blog Image"
-                      />
-                      <h2
-                        class="fw-bold text-primary"
-                        th:text="${blog.title}"
-                      ></h2>
-                    </a>
-                  </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 class="mb-4 fw-bold">Update Blog</h2>
+            </div>
+            <div class="card-body">
+              <form
+                th:action="@{/update-blog/submit}"
+                method="post"
+                enctype="multipart/form-data"
+                th:object="${blog}"
+              >
+                <!-- Title -->
+                <div class="form-group">
+                  <label for="title"> Title:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    th:value="${blog.title}"
+                    required
+                  />
                 </div>
-                <div class="card-body">
-                  <p
-                    class="card-text"
-                    th:text="${#strings.length(blog.content) > 300 ? #strings.substring(blog.content, 0, 300) + '...' : blog.content}"
-                  ></p>
-                  <div class="d-flex flex-column align-items-center mt-3">
-                    <a
-                      class="btn btn-primary show-more"
-                      th:href="@{'/blog/' + ${blog.blogId} + '/user/' + ${blog.userId}}"
-                      >Show More</a
-                    >
-                  </div>
+
+                <!-- Content -->
+                <div class="form-group">
+                  <label for="content"> Content:</label>
+                  <textarea
+                    class="form-control"
+                    id="content"
+                    name="content"
+                    rows="5"
+                    th:text="${blog.content}"
+                    required
+                  ></textarea>
                 </div>
-              </div>
+
+                <!-- Updated Links -->
+                <div class="form-group">
+                  <label for="link1"> Link 1:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="link1"
+                    name="link1"
+                    th:value="${blog.link1}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="link2"> Link 2:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="link2"
+                    name="link2"
+                    th:value="${blog.link2}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="link3"> Link 3:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="link3"
+                    name="link3"
+                    th:value="${blog.link3}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="link4"> Link 4:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="link4"
+                    name="link4"
+                    th:value="${blog.link4}"
+                  />
+                </div>
+
+                <!-- Include the hidden field for blogId -->
+                <input
+                  type="hidden"
+                  id="blogId"
+                  name="blogId"
+                  th:value="${blog.blogId}"
+                />
+
+                <!-- Submit Button for Update -->
+                <button type="submit" class="btn btn-primary">
+                  Update Blog
+                </button>
+              </form>
             </div>
           </div>
         </div>
