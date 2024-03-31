@@ -1,14 +1,8 @@
-# Use the base image with JDK 17 installed
+FROM maven:3.8.5-openjdk-17-slim AS build
+COPY . .
+RUN mvn clean package -DskipTests
+
 FROM eclipse-temurin:17-jdk-alpine
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the compiled JAR file from the target directory to the container
-COPY /blog_application/target/*.jar app.jar
-
-# Expose the port the application runs on
+COPY --from=build /target/blog_application-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-
-# Command to run the application when the container starts
 CMD ["java", "-jar", "app.jar"]
