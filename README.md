@@ -12,7 +12,6 @@ Welcome to the Blog Application, a dynamic web platform developed using Java and
   - [Analysis of Features](#analysis-of-features)
   - [Project Summary](#project-summary)
   - [Project Architecture](#project-architecture)
-  - [Getting Started](#getting-started)
 
 ## Features
 
