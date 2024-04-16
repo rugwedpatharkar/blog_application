@@ -131,7 +131,7 @@
       <!-- The form for updating the user profile -->
       <form th:action="@{/update}" method="post">
         <input
-          type="text"
+          type="hidden"
           id="userId"
           name="userId"
           th:value="${user.userId}"
