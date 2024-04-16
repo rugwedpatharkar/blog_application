@@ -56,6 +56,11 @@ public class MainController {
 		return "redirect:/";
 	}
 
+	@GetMapping("/forgot-password")
+	public String showForgotPasswordPage() {
+		return "forgot-password";
+	}
+
 	@PostMapping("/register")
 	public String registerUser(@ModelAttribute User user, Model model) {
 		try {
@@ -68,11 +73,6 @@ public class MainController {
 			model.addAttribute("alertMessage", e.getMessage());
 			return "register";
 		}
-	}
-
-	@GetMapping("/forgot-password")
-	public String showForgotPasswordPage() {
-		return "/forgot-password";
 	}
 
 	@PostMapping("/forgot-password")
